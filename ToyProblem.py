@@ -50,7 +50,7 @@ class Decoder(nn.Module):
         )
     def forward(self,x):
         return self.layers(x)
-
+#%%
 class Quantizing(nn.Module):
     def __init__(self,num_quantizing:int, quantizing_dim:int,device=None,dtype=None):
         super().__init__()
@@ -74,7 +74,9 @@ class Quantizing(nn.Module):
         q_idx = torch.argmin(dist,dim=-1) # shape is (B, )
         q_data = self.weight[q_idx] # shape is (B, Q)
         return q_data.view(input_size), q_idx.view(input_size[:-1])
-
+#%%
+from quantizing_layers import Quantizing
+#%%
 class VQ_AutoEncoder(pl.LightningModule):
 
     def __init__(self,in_features:int, hidden_features:int, num_quantizing:int,lr:float = 0.001):
