@@ -64,7 +64,7 @@ class Quantizing(nn.Module):
         """
         input_size = x.shape
         x = x.reshape(-1,self.quantizing_dim) # shape is (B,E)
-        delta = self.weight.squeeze(0) - x.unsqueeze(1) # shape is (B, Q, E)
+        delta = self.weight.unsqueeze(0) - x.unsqueeze(1) # shape is (B, Q, E)
         dist = torch.sum(delta*delta,dim=-1) # shape is (B, Q)
         q_idx = torch.argmin(dist,dim=-1) # shape is (B, )
         q_data = self.weight[q_idx] # shape is (B, Q)
