@@ -11,7 +11,7 @@ from hparams import CIFAR100_default as hparams
 import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 # %% set dataset
-data_set = CIFAR100('data',False,download=False,
+data_set = CIFAR100('data',False,download=True,
     transform= transforms.Compose(
         [transforms.ToTensor(),]
     )
