@@ -6,13 +6,14 @@ max_view_imgs = 16
 view_interval = 50
 
 model_name:str = 'CIFAR100_AE'
-lr:float = 0.0002
+lr:float = 0.001
+momentum:float = 0.9
 num_quantizing:int = 500
-quantizing_dim:int = 64
+quantizing_dim:int = 32
 
 encoder_channels = (8,16,32)
 res_kernel = 5
-res_num_layers = 1
+res_num_layers = 2
 
 class encoder_hparams:
     model_name = model_name + '_encoder'

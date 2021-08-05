@@ -117,24 +117,26 @@ class VQ_AutoEncoder(pl.LightningModule):
 
     def forward(self,x:torch.Tensor):
         h = self.encoder(x)
-        #h,idx = self.quantizer(h)
+        h,idx = self.quantizer(h)
         y = self.decoder(h)
         return y
 
     def configure_optimizers(self):
         optim = torch.optim.Adam(self.parameters(),self.lr)
+        #optim = torch.optim.SGD(self.parameters(),self.my_hparams.lr,self.my_hparams.momentum)
         return optim
     
     def training_step(self,batch,idx):
         data,_ = batch
         self.data = data
         encoded = self.encoder(data)
-        q_data,q_idx = self.quantizer(encoded)
+        q_ans = encoded.detach()
+        q_data,q_idx = self.quantizer(q_ans)
         decoded = self.decoder(encoded)
 
         # loss
         t_loss = self.MSE(decoded,data)
-        q_loss = self.MSE(q_data,encoded)
+        q_loss = self.MSE(q_data,q_ans)
         loss = t_loss + q_loss
         self.log('target loss', t_loss)
         self.log('quantizing loss',q_loss)

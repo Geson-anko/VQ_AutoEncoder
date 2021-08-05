@@ -1,0 +1,22 @@
+2021/8/5
+☆Quantizingレイヤーのinitialize_by_dataset=Trueのとき。
+
+非常に面白いことに、層が深いネットワークは学習時に一つの鞍点または停留点に落ちるためか、
+Quantizingしたときに一つのQuantizeベクトルに集まり、まったく機能しない。
+QuantizingレイヤーとAutoEncoderの学習を別々に行うことが必要だろう。
+AutoEncoderの事前学習の重みは、前世の記憶みたいなものと処理してしまおう。
+
+これが、ToyProblemのほうでやると、すごくうまくQuantizeされているから面白い。一様に量子化されている
+
+2021/8/6
+昨日の夜考えていておもいついたのだが、
+
+q_loss = MSE(q_data,encoded)　
+
+という損失の取り方では、AutoEncoder側のパラメータも更新されてしまうだろう。つまり
+
+q_loss = MSE(q_data, encoded.detach())
+
+と書くべきなのである。前者の方法では、量子化したデータに万が一偏りが生じた場合、
+AutoEncoder側も偏りを出力するように最適化される。Quantizing WeightとAutoEncoderは全くの別プロセスと考えるべき。
+

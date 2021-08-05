@@ -8,6 +8,8 @@ from torch.utils import data as DataUtil
 from CIFAR100_model import VQ_AutoEncoder
 from hparams import CIFAR100_default as hparams
 
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 # %% set dataset
 data_set = CIFAR100('data',False,download=False,
     transform= transforms.Compose(
@@ -15,8 +17,8 @@ data_set = CIFAR100('data',False,download=False,
     )
 )
 # %% set some settings
-EPOCHS = 1000
-batch_size= 1024 *4
+EPOCHS = 10000
+batch_size= 1024 *8
 model = VQ_AutoEncoder(hparams)
 data_loader = DataUtil.DataLoader(data_set,batch_size,shuffle=True,num_workers=0,pin_memory=True,drop_last=True)
 
