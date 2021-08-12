@@ -20,3 +20,35 @@ q_loss = MSE(q_data, encoded.detach())
 と書くべきなのである。前者の方法では、量子化したデータに万が一偏りが生じた場合、
 AutoEncoder側も偏りを出力するように最適化される。Quantizing WeightとAutoEncoderは全くの別プロセスと考えるべき。
 
+2021/8/12
+afterVQ (3090PC の version2 )にて、学習後のAutoEncoderのパラメータを用いて量子化してみた。基本的に一様に量子化されている。
+また、うまく物体の色合いや概形を捉えられているようにも思われる。
+VQ_AutoEncoderの学習方法としては、
+    AutoEncoderの学習 -> Quantizingレイヤーの学習　
+といった感じで行うのが良いと思われる。
+
+---
+次は、Cossin_similarityによる量子化を視てみよう。ToyProblemで実行している
+１，loss関数もCossin Similarityによるものにしてみた場合 (version 21)
+    基本的にうまく量子化されていない。少数の点に集まってしまっている.
+
+２，loss関数はMSEのままにしてみた場合 (version 22)
+    うまく量子化されない。少数の点に集まっているが、q_idxが移り変わるタイミングがしばしばある。
+    安定して量子化されないため、なし。
+
+---
+
+VQ_AutoEncoderの実用化について
+1, VQ_AutoEncoderをJ.A.R.V.I.Sに採用するメリット
+    ・計算量、メモリ使用量の定数化
+    ・AutoEncoder再学習時にEncoderの出力ベクトルがMemoryに一致しなくなる問題の解決
+    ・↑によりDecoderも復元できなくなる問題の解決
+
+2, VQ_AutoEncoderのデメリット
+    ・学習時に存在しない出力分布に対応できない
+    ・記憶との計算時に、近いと保障できる記憶の数が1つで固定される。
+        → 現実世界の情報をとらえる際の速度が低下する恐れ
+    ・学習時のメモリ消費が増える
+
+
+

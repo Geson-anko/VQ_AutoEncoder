@@ -76,6 +76,13 @@ class Quantizing(nn.Module):
         return q_data.view(input_size), q_idx.view(input_size[:-1])
 #%%
 from quantizing_layers import Quantizing
+class CossimLoss(nn.Module):
+    def __init__(self,dim:int = 1, eps:float = 1e-8):
+        super().__init__()
+        self.cos_sim = nn.CosineSimilarity(dim,eps)
+
+    def forward(self, output, target):
+        return -self.cos_sim(output,target).mean() + 1
 #%%
 class VQ_AutoEncoder(pl.LightningModule):
 
@@ -87,6 +94,8 @@ class VQ_AutoEncoder(pl.LightningModule):
         self.lr = lr
         # defining criterion
         self.criterion = nn.MSELoss()
+        #self.inner_criterion = CossimLoss()
+        self.inner_criterion = nn.MSELoss()
         
         # defining histgram_data
         self.histogram_data = torch.zeros((num_quantizing,),dtype=torch.int)
@@ -114,7 +123,7 @@ class VQ_AutoEncoder(pl.LightningModule):
         q,q_idx = self.quantizer(h)
         decoded = self.decoder(h) # non quantize
         #o = self.decoder(q) 
-        inner_loss = self.criterion(q,h)
+        inner_loss = self.inner_criterion(q,h.detach())
         #outer_loss = self.criterion(o,data)
         true_loss = self.criterion(decoded,data)
         #loss = outer_loss+inner_loss+true_loss
@@ -153,13 +162,13 @@ dummy = data_set.data[:100]
 print(dummy)
 encoded = model.encoder(dummy)
 decoded = model.decoder(encoded)
-#print(decoded)
+print(decoded)
 quantized,q_idx = model.quantizer(encoded)
 print(q_idx)
 quantized_decoded = model.decoder(quantized)
 #print(encoded)
 #print(quantized)
-#print(quantized_decoded)
+print(quantized_decoded)
 
 # %%
 torch.load('params/ToyProblem.pth')
