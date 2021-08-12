@@ -6,7 +6,7 @@ max_view_imgs = 16
 view_interval = 50
 
 model_name:str = 'CIFAR100_afterVQ'
-lr:float = 0.00001
+lr:float = 0.001
 momentum:float = 0.9
 num_quantizing:int = 500
 quantizing_dim:int = 32
