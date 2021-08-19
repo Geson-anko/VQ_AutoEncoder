@@ -87,6 +87,7 @@ class Quantizing(nn.Module):
 
     def isInitialized(self) -> bool:
         return self.__initialized
+
 class Quantizing_cossim(nn.Module):
     """
     This is quantizing layer.
@@ -186,7 +187,22 @@ class Quantizing_cossim(nn.Module):
     def isInitialized(self)->bool:
         return self.__initialized
 
+class ConsinSimilarityLoss(nn.Module):
+    def __init__(self,dim:int=1,eps:float = 1e-8,min_zero:bool = True):
+        super().__init__()
+        self.criterion = nn.CosineSimilarity(dim,eps)
+        self.min_zero = min_zero
+
+    def forward(self,output:torch.Tensor,target:torch.Tensor):
+        cossim = self.criterion(output,target).mean()
+        if self.min_zero:
+            cossim = -cossim+1
+        return cossim    
+
 
 if __name__ == '__main__':
     l = Quantizing_cossim(4,3,torch.randn(4,3))
-    l(torch.randn(4,3))
+    data = torch.randn(4,3)
+    out,_ = l(data)
+    loss = ConsinSimilarityLoss()
+    print(loss(out,data))

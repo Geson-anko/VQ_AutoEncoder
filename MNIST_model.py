@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchsummaryX import summary
-from quantizing_layers import Quantizing
+from quantizing_layers import Quantizing,Quantizing_cossim,ConsinSimilarityLoss
 import pytorch_lightning as pl
 from torchvision.utils import make_grid
 from hparams import MNIST_default as hparams
@@ -156,6 +156,12 @@ class VQ_AutoEncoder(pl.LightningModule):
             fig = plt.figure()
             ax = fig.subplots()
             ax.bar(self.q_hist_idx,self.q_hist)
+            
+            quantized_num = len(self.q_hist[self.q_hist!=0])
+            q_text = f'{quantized_num}/{self.num_quantizing}'
+            ax.text(0.9,1.05,q_text,ha='center',va='center',transform=ax.transAxes,fontsize=12)
+            ax.set_xlabel('weight index')
+            ax.set_ylabel('num')
             self.logger.experiment.add_figure('Quantizing Histogram',fig,self.current_epoch)
             
         self.q_hist.zero_()
@@ -170,6 +176,13 @@ class VQ_AutoEncoder(pl.LightningModule):
             writer.add_graph(self,dummy)
             writer.close()
 
+class VQ_AutoEncoder_cossim(VQ_AutoEncoder):
+    def __init__(self,hparams:hparams):
+        super().__init__(hparams)
+        self.quantizing_loss = ConsinSimilarityLoss()
+        self.quantizer = Quantizing_cossim(hparams.num_quantizing,hparams.quantizing_dim)
+
+
 if __name__ == '__main__':
     from torchvision.datasets import MNIST
     from torchvision import transforms
@@ -181,5 +194,5 @@ if __name__ == '__main__':
     ))
     data_loader = DataLoader(data_set,hparams.num_quantizing,True)
     model.set_quantizing_weight(data_loader,'cpu')
-    model.summary(True)
+    model.summary(False)
     
