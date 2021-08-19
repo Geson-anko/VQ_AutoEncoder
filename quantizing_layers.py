@@ -37,7 +37,7 @@ class Quantizing(nn.Module):
             assert _weight.size(1) == quantizing_dim
             self.weight = nn.Parameter(_weight.to(device).to(dtype))
 
-        self.register_buffer('quantizing',self.weight)
+        #self.register_buffer('quantizing',self.weight)
 
     def forward(self,x:torch.Tensor) -> Tuple[torch.Tensor]:
         """
@@ -54,11 +54,11 @@ class Quantizing(nn.Module):
             _until = self.__initialized_length + init_weight.size(0)
             self.weight.data[self.__initialized_length:_until] = init_weight
             self.__initialized_length = _until
-            #print('replaced weight')
+            print('replaced weight')
 
             if _until >= self.num_quantizing:
                 self.__initialized = True
-                #print('initialized')
+                print('initialized')
         
         delta = self.weight.unsqueeze(0) - h.unsqueeze(1) # shape is (B, Q, E)
         dist =torch.sum(delta*delta, dim=-1) # shape is (B, Q)
@@ -85,6 +85,8 @@ class Quantizing(nn.Module):
         s = f'Quantizing({self.num_quantizing}, {self.quantizing_dim})'
         return s
 
+    def isInitialized(self) -> bool:
+        return self.__initialized
 class Quantizing_cossim(nn.Module):
     """
     This is quantizing layer.
@@ -121,7 +123,7 @@ class Quantizing_cossim(nn.Module):
             assert _weight.size(1) == quantizing_dim
             self.weight = nn.Parameter(_weight.to(device).to(dtype))
 
-        self.register_buffer('quantizing',self.weight)
+        #self.register_buffer('quantizing',self.weight)
 
     def forward(self,x:torch.Tensor) -> Tuple[torch.Tensor]:
         """
@@ -138,11 +140,11 @@ class Quantizing_cossim(nn.Module):
             _until = self.__initialized_length + init_weight.size(0)
             self.weight.data[self.__initialized_length:_until] = init_weight
             self.__initialized_length = _until
-            #print('replaced weight')
+            print('replaced weight')
 
             if _until >= self.num_quantizing:
                 self.__initialized = True
-                #print('initialized')
+                print('initialized')
         
         dist =self.calculate_distance(h) # shape is (B, Q)
         q_idx = torch.argmin(dist,dim=-1) # shape is (B,)
@@ -181,6 +183,8 @@ class Quantizing_cossim(nn.Module):
         cos_sim = dot / norm
         return -cos_sim + 1
 
+    def isInitialized(self)->bool:
+        return self.__initialized
 
 
 if __name__ == '__main__':
