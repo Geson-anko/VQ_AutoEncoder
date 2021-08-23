@@ -1,4 +1,0 @@
-lr: 0.001
-model_name: MNIST_cossim
-num_quantizing: 32
-quantizing_dim: 32
