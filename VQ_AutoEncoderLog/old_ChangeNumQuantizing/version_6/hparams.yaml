@@ -1,0 +1,4 @@
+lr: 0.001
+model_name: MNIST_default
+num_quantizing: 8192
+quantizing_dim: 32
