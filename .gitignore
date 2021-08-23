@@ -2,4 +2,4 @@ data
 runs
 lightning_logs
 temp
-_VQ_AutoEncoderLog
+VQ_AutoEncoderLog
