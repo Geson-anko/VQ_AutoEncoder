@@ -139,7 +139,6 @@ class VQ_AutoEncoder(pl.LightningModule):
 
     @torch.no_grad()
     def on_epoch_end(self) -> None:
-        self.logger.experiment.add_hparams(self.my_hparams_dict,dict(),run_name=self.model_name)
         if (self.current_epoch+1) % self.my_hparams.view_interval ==0:
             # image logging
             data = self.view_data[:self.my_hparams.max_view_imgs].float()
