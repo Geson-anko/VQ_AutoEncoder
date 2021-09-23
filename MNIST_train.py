@@ -28,8 +28,8 @@ model = VQ_AutoEncoder(hparams)
 data_loader = DataUtil.DataLoader(data_set,batch_size,shuffle=True,num_workers=0,pin_memory=True,drop_last=True)
 
 #%%
-model.encoder.load_state_dict(torch.load('params/MNIST_default_encoder_2021-08-18_21-11-47.pth'))
-model.decoder.load_state_dict(torch.load('params/MNIST_default_decoder_2021-08-18_21-11-47.pth'))
+#model.encoder.load_state_dict(torch.load('params/MNIST_default_encoder_2021-08-18_21-11-47.pth'))
+#model.decoder.load_state_dict(torch.load('params/MNIST_default_decoder_2021-08-18_21-11-47.pth'))
 model.set_quantizing_weight(data_loader)
 #%%
 if __name__ == '__main__':
