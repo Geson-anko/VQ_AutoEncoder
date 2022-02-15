@@ -3,3 +3,5 @@ runs
 lightning_logs
 temp
 VQ_AutoEncoderLog
+*.pth
+VQAE_log
